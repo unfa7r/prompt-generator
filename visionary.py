@@ -1,5 +1,5 @@
 from core.engine import load_settings, validate_settings
-from core.wizard import select_subject, choose
+from core.wizard import select_subject
 from core.scene_graph import build_scene_graph
 from core.renderer import render_prompt, render_json
 from core.validator import validate_scene_graph
@@ -16,7 +16,7 @@ ASPECT_RATIOS = [
 
 
 def show_menu():
-    print("\n")
+    print()
     print("=" * 36)
     print("          V I S I O N A R Y")
     print("=" * 36)
@@ -76,7 +76,7 @@ def display_output(scene):
         return
 
     if choice in ("1", "3"):
-        print("\n")
+        print()
         print("=" * 50)
         print("              GENERATED PROMPT")
         print("=" * 50)
@@ -85,7 +85,7 @@ def display_output(scene):
         print("\n" + "=" * 50)
 
     if choice in ("2", "3"):
-        print("\n")
+        print()
         print("=" * 50)
         print("              GENERATED JSON")
         print("=" * 50)
@@ -130,21 +130,25 @@ def show_settings(settings):
 
 
 def main():
-    settings = validate_settings(load_settings())
+    try:
+        settings = validate_settings(load_settings())
 
-    while True:
-        show_menu()
-        choice = input("Select an option: ").strip()
+        while True:
+            show_menu()
+            choice = input("Select an option: ").strip()
 
-        if choice == "1":
-            generate_scene("realistic", settings)
-        elif choice == "2":
-            generate_scene("anime", settings)
-        elif choice == "0":
-            print("\nVISIONARY closed.")
-            break
-        else:
-            print("\\nInvalid selection. Try again.")
+            if choice == "1":
+                generate_scene("realistic", settings)
+            elif choice == "2":
+                generate_scene("anime", settings)
+            elif choice == "0":
+                print("\nVISIONARY closed.")
+                break
+            else:
+                print("\nInvalid selection. Try again.")
+
+    except (KeyboardInterrupt, EOFError):
+        print("\n\nVISIONARY closed.")
 
 
 if __name__ == "__main__":
