@@ -147,6 +147,11 @@ def select_subject(mode):
         "weather": None,
         "atmosphere": None,
         "visual_effects": None,
+        "visual_style": None,
+        "color_grading": None,
+        "camera_techniques": None,
+        "character_details": None,
+        "architecture_details": None,
         "camera": None
     }
 
@@ -160,6 +165,7 @@ def select_subject(mode):
         )
 
         result["subject"] = structure
+        result["architecture_details"] = select_architecture_details(categories)
 
     if subject in ("Car", "Vehicle"):
         select_vehicle(result)
@@ -168,12 +174,6 @@ def select_subject(mode):
         result["framing"] = choose("Framing", [
             "Portrait", "Upper Body", "Full Body", "Close-up",
             "Side Profile", "Three-Quarter View", "Silhouette"
-        ])
-
-        result["camera_angle"] = choose("Camera Angle", [
-            "Eye Level", "Low Angle", "High Angle",
-            "Bird's Eye View", "Worm's Eye View",
-            "Dutch Angle", "Over the Shoulder", "Side View"
         ])
 
         result["composition"] = choose("Composition", [
@@ -188,6 +188,40 @@ def select_subject(mode):
             "Arms Crossed", "Dynamic Action",
             "Kneeling", "Running"
         ])
+
+    result["camera_angle"] = choose("Camera Angle", [
+        "Eye Level", "Low Angle", "High Angle",
+        "Bird's Eye View", "Worm's Eye View",
+        "Dutch Angle", "Over the Shoulder", "Side View",
+        "Front View", "Rear View", "Profile View",
+        "Three-Quarter Front View", "Three-Quarter Rear View",
+        "Top-Down View", "Ground-Level View",
+        "POV (First-Person)", "Overhead Shot",
+        "Extreme Low Angle", "Extreme High Angle"
+    ])
+
+    if subject in ("Person", "Character", "Portrait"):
+        result["character_details"] = select_character_details(
+            load_categories()
+        )
+
+    categories = load_categories()
+    styles = categories.get("visual_styles", {})
+
+    result["visual_style"] = choose(
+        "Visual Style",
+        styles.get(mode, [])
+    )
+
+    result["color_grading"] = choose(
+        "Color Grading",
+        categories.get("color_grading", [])
+    )
+
+    result["camera_techniques"] = select_multi_category(
+        "Camera Techniques",
+        categories.get("camera_techniques", [])
+    )
 
     select_scene_settings(result)
     result['camera'] = select_camera_settings() or None
@@ -372,6 +406,7 @@ def select_additional_elements(mode):
                 continue
 
             item["subject"] = value
+            item["character_details"] = select_character_details(categories)
 
         elif element_type == "Vehicle":
             select_vehicle(item)
@@ -387,6 +422,7 @@ def select_additional_elements(mode):
                 continue
 
             item["subject"] = value
+            item["architecture_details"] = select_architecture_details(categories)
 
         elif element_type == "Lifestyle":
             options = (
@@ -428,3 +464,69 @@ def select_additional_elements(mode):
         print(f"Added: {item['subject']}")
 
     return selected or None
+
+
+def select_multi_category(title, options):
+    if not options:
+        return None
+
+    selected = []
+
+    print(f"\n{title.upper()}")
+    print("=" * 30)
+
+    for index, option in enumerate(options, 1):
+        print(f"{index}. {option}")
+
+    print("0. Finish / Skip")
+
+    while True:
+        choice = input("\nSelect: ").strip()
+
+        if choice == "0":
+            return selected or None
+
+        if choice.isdigit() and 1 <= int(choice) <= len(options):
+            value = options[int(choice) - 1]
+
+            if value not in selected:
+                selected.append(value)
+                print(f"Added: {value}")
+            else:
+                print("Already selected.")
+
+        else:
+            print("Invalid selection.")
+
+
+def select_character_details(categories):
+    details = categories.get("character_details", {})
+    result = {}
+
+    for key, title in [
+        ("hairstyles", "Hairstyle"),
+        ("clothing", "Clothing"),
+        ("expressions", "Facial Expression"),
+        ("accessories", "Character Accessories")
+    ]:
+        result[key] = choose(title, details.get(key, []))
+
+    return result
+
+
+def select_architecture_details(categories):
+    details = categories.get("architecture_details", {})
+    result = {}
+
+    for key, title in [
+        ("styles", "Architectural Style"),
+        ("facades", "Facade Details"),
+        ("materials", "Architectural Materials"),
+        ("features", "Architectural Features")
+    ]:
+        result[key] = select_multi_category(
+            title,
+            details.get(key, [])
+        )
+
+    return result

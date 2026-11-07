@@ -59,7 +59,7 @@ def describe_camera(camera, mode="realistic", subject_type=None, subject_name=No
         "24mm": "a 24mm ultra-wide lens with expansive perspective",
         "35mm": "a 35mm wide-angle lens with natural environmental perspective",
         "50mm": "a 50mm standard lens with natural perspective",
-        "85mm": "an 85mm portrait lens with flattering compression",
+        "85mm": "an 85mm lens with controlled perspective compression",
         "135mm": "a 135mm telephoto lens with compressed perspective"
     }
 
@@ -157,13 +157,26 @@ def describe_camera(camera, mode="realistic", subject_type=None, subject_name=No
     if not descriptions:
         return ""
 
-    if is_anime:
-        return (
-            "Cinematic anime camera direction: "
-            + ", ".join(descriptions)
-        )
+    sentences = []
 
-    return (
-        "Photographic camera setup: "
-        + ", ".join(descriptions)
-    )
+    if lens in lens_descriptions:
+        sentences.append(f"The camera uses {lens_descriptions[lens]}.")
+
+    if distance in distance_descriptions:
+        distance_text = distance_descriptions[distance]
+        distance_text = distance_text.replace(
+            "a wide camera distance", "a wide shot"
+        ).replace(
+            "a medium camera distance", "a medium shot"
+        ).replace(
+            "a close camera distance", "a close-up shot"
+        )
+        sentences.append(f"The shot is framed with {distance_text}.")
+
+    if depth in depth_descriptions:
+        sentences.append(f"Depth of field: {depth_descriptions[depth]}.")
+
+    if focus in focus_descriptions:
+        sentences.append(f"Focus: {focus_descriptions[focus]}.")
+
+    return " ".join(sentences)

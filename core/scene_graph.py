@@ -30,7 +30,6 @@ def describe_item(data):
         "headlights": "headlights",
         "pose": "pose",
         "framing": "framing",
-        "camera_angle": "camera angle",
         "composition": "composition"
     }
 
@@ -38,6 +37,27 @@ def describe_item(data):
         value = data.get(key)
 
         if value is not None:
+            parts.append(f"{label}: {value}")
+
+    detail_labels = {
+        "hairstyles": "hairstyle",
+        "clothing": "clothing",
+        "expressions": "expression",
+        "accessories": "accessories",
+        "styles": "architectural style",
+        "facades": "facade",
+        "materials": "architectural materials",
+        "features": "architectural features"
+    }
+
+    for key, label in detail_labels.items():
+        details = data.get("character_details") or {}
+        architecture = data.get("architecture_details") or {}
+        value = details.get(key) or architecture.get(key)
+
+        if value:
+            if isinstance(value, list):
+                value = ", ".join(str(item) for item in value)
             parts.append(f"{label}: {value}")
 
     return ", ".join(parts)
@@ -56,6 +76,16 @@ def describe_scene(data):
 
     if subject:
         parts.append(f"featuring {describe_item(data)}")
+
+    if data.get("visual_style"):
+        parts.append(f"visual style: {data['visual_style']}")
+
+    if data.get("color_grading"):
+        parts.append(f"color grading: {data['color_grading']}")
+
+    techniques = data.get("camera_techniques")
+    if techniques:
+        parts.append("camera techniques: " + ", ".join(techniques))
 
     additional = []
 
@@ -170,8 +200,15 @@ def build_scene_graph(data, aspect_ratio="4:3"):
     if isinstance(camera, dict) and camera:
         scene["camera"] = dict(camera)
 
+    if data.get("camera_angle"):
+        scene["camera_angle"] = data["camera_angle"]
+
     if data.get("visual_effects"):
         scene["visual_effects"] = data["visual_effects"]
+
+    for key in ("visual_style", "color_grading", "camera_techniques"):
+        if data.get(key):
+            scene[key] = data[key]
 
     return scene
 

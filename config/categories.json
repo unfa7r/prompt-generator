@@ -316,5 +316,145 @@
             "Rain Haze",
             "Subtle Atmospheric Depth"
         ]
+    },
+    "visual_styles": {
+        "realistic": [
+            "Neo-Noir",
+            "Cyberpunk",
+            "Dark Fantasy",
+            "Retro-Futurism",
+            "Gothic",
+            "Brutalist",
+            "Luxury Editorial",
+            "Vintage Cinema",
+            "Post-Apocalyptic",
+            "Minimalist",
+            "Surrealism",
+            "Art Deco"
+        ],
+        "anime": [
+            "Dark Fantasy Anime",
+            "Cyberpunk Anime",
+            "Neo-Noir Anime",
+            "Gothic Anime",
+            "Retro Anime",
+            "Dreamlike Anime",
+            "Surreal Anime",
+            "Post-Apocalyptic Anime",
+            "Cel-Shaded",
+            "Dark Psychological Anime",
+            "Epic Fantasy Anime",
+            "Minimalist Anime"
+        ]
+    },
+    "color_grading": [
+        "Teal and Orange",
+        "Bleach Bypass",
+        "Desaturated Cinematic",
+        "Warm Vintage Film",
+        "Cold Blue Shadows",
+        "Crimson and Black",
+        "Golden Cinematic Tones",
+        "Muted Earth Tones",
+        "High Contrast Monochrome",
+        "Pastel Color Palette",
+        "Analog Film Colors",
+        "Deep Emerald Tones"
+    ],
+    "camera_techniques": [
+        "Anamorphic Cinematography",
+        "Dutch Angle",
+        "Over-the-Shoulder Shot",
+        "Tracking Shot",
+        "Dolly Zoom",
+        "Macro Photography",
+        "Long Exposure",
+        "Low Perspective Shot",
+        "Extreme Close-Up",
+        "Symmetrical Framing",
+        "Leading Lines",
+        "Foreground Framing"
+    ],
+    "character_details": {
+        "hairstyles": [
+            "Messy Textured Hair",
+            "Slicked-Back Hair",
+            "Long Flowing Hair",
+            "Short Undercut",
+            "Layered Hair",
+            "Wind-Swept Hair",
+            "Braided Hair",
+            "Loose Wavy Hair"
+        ],
+        "clothing": [
+            "Tailored Black Suit",
+            "Long Leather Coat",
+            "Oversized Streetwear",
+            "Minimalist Formal Outfit",
+            "Dark Tactical Clothing",
+            "Elegant Evening Wear",
+            "Futuristic Techwear",
+            "Vintage Formal Clothing"
+        ],
+        "expressions": [
+            "Cold Expression",
+            "Mysterious Gaze",
+            "Subtle Smirk",
+            "Intense Stare",
+            "Melancholic Expression",
+            "Confident Expression",
+            "Emotionless Expression",
+            "Determined Look"
+        ],
+        "accessories": [
+            "Metallic Jewelry",
+            "Leather Gloves",
+            "Dark Sunglasses",
+            "Minimalist Watch",
+            "Decorative Mask",
+            "Silver Necklace",
+            "Statement Earrings"
+        ]
+    },
+    "architecture_details": {
+        "styles": [
+            "Neo-Gothic",
+            "Modernist",
+            "Brutalist",
+            "Art Deco",
+            "Neoclassical",
+            "Parametric Architecture",
+            "Industrial",
+            "Minimalist Contemporary"
+        ],
+        "facades": [
+            "Reflective Glass Facade",
+            "Dark Stone Facade",
+            "Geometric Concrete Facade",
+            "Ornate Gothic Facade",
+            "Perforated Metal Facade",
+            "Marble Cladding",
+            "Exposed Concrete Surface"
+        ],
+        "materials": [
+            "Polished Black Marble",
+            "Brushed Steel",
+            "Exposed Concrete",
+            "Dark Natural Stone",
+            "Reflective Glass",
+            "Weathered Copper",
+            "Travertine",
+            "Textured Limestone"
+        ],
+        "features": [
+            "Monumental Entrance",
+            "Tall Arched Windows",
+            "Cantilevered Structure",
+            "Sculptural Staircase",
+            "Geometric Columns",
+            "Dramatic Roofline",
+            "Floor-to-Ceiling Windows",
+            "Ornamental Detailing"
+        ]
     }
 }
