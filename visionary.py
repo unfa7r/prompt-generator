@@ -121,14 +121,6 @@ def generate_scene(mode, settings):
     display_output(scene)
 
 
-def show_settings(settings):
-    print("\nSETTINGS")
-    print("=" * 36)
-
-    for key, value in settings.items():
-        print(f"{key}: {value}")
-
-
 def main():
     try:
         settings = validate_settings(load_settings())
