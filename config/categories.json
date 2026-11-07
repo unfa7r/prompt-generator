@@ -1,0 +1,320 @@
+{
+    "vehicles": {
+        "lamborghini": [
+            "Lamborghini Aventador",
+            "Lamborghini Revuelto",
+            "Lamborghini Huracan",
+            "Lamborghini Urus",
+            "Lamborghini Sian",
+            "Lamborghini Centenario",
+            "Lamborghini Veneno",
+            "Lamborghini Fenomeno",
+            "Lamborghini Miura",
+            "Lamborghini Countach",
+            "Lamborghini Sesto Elemento",
+            "Lamborghini Diablo",
+            "Lamborghini Murcielago",
+            "Lamborghini Gallardo",
+            "Lamborghini Reventon",
+            "Lamborghini Jalpa",
+            "Lamborghini Espada",
+            "Lamborghini Islero",
+            "Lamborghini Urraco",
+            "Lamborghini LM002"
+        ],
+        "ferrari": [
+            "Ferrari LaFerrari",
+            "Ferrari F80",
+            "Ferrari SF90 XX",
+            "Ferrari 812 Competizione",
+            "Ferrari Daytona SP3",
+            "Ferrari 296 GTB",
+            "Ferrari 849 Testarossa",
+            "Ferrari 849 Testarossa Spider",
+            "Ferrari 12Cilindri",
+            "Ferrari 12Cilindri Spider",
+            "Ferrari 296 Speciale",
+            "Ferrari 296 Speciale A",
+            "Ferrari Amalfi",
+            "Ferrari Purosangue"
+        ],
+        "bugatti": [
+            "Bugatti Chiron",
+            "Bugatti Chiron Super Sport",
+            "Bugatti Divo",
+            "Bugatti Bolide",
+            "Bugatti Centodieci",
+            "Bugatti Tourbillon"
+        ],
+        "pagani": [
+            "Pagani Huayra",
+            "Pagani Huayra BC",
+            "Pagani Utopia",
+            "Pagani Zonda F",
+            "Pagani Zonda Cinque",
+            "Pagani Imola"
+        ],
+        "mclaren": [
+            "McLaren P1",
+            "McLaren Senna",
+            "McLaren Speedtail",
+            "McLaren 765LT",
+            "McLaren 750S",
+            "McLaren W1"
+        ],
+        "koenigsegg": [
+            "Koenigsegg Jesko",
+            "Koenigsegg Jesko Absolut",
+            "Koenigsegg Regera",
+            "Koenigsegg Agera RS",
+            "Koenigsegg Gemera",
+            "Koenigsegg CC850"
+        ],
+        "colors": [
+            "Glossy Black",
+            "Matte Black",
+            "Satin Black",
+            "Dark Metallic Black"
+        ],
+        "materials": [
+            "Carbon Fiber",
+            "Forged Carbon Fiber",
+            "Black Carbon Fiber Details"
+        ],
+        "headlights": [
+            "Red LED Headlights",
+            "Crimson Red Light Signature",
+            "Aggressive Red Lighting"
+        ],
+        "rolls_royce": [
+            "Rolls-Royce Spectre",
+            "Rolls-Royce Phantom",
+            "Rolls-Royce Ghost",
+            "Rolls-Royce Cullinan",
+            "Rolls-Royce Wraith",
+            "Rolls-Royce Dawn"
+        ],
+        "porsche": [
+            "Porsche 911 GT3 RS",
+            "Porsche 911 Turbo S",
+            "Porsche 918 Spyder",
+            "Porsche Taycan Turbo GT",
+            "Porsche Carrera GT",
+            "Porsche 911 Dakar"
+        ],
+        "mercedes_amg": [
+            "Mercedes-AMG GT",
+            "Mercedes-AMG ONE",
+            "Mercedes-AMG GT 63 S",
+            "Mercedes-AMG C 63 S",
+            "Mercedes-AMG SL 63",
+            "Mercedes-AMG G 63"
+        ],
+        "bmw": [
+            "BMW M8 Competition",
+            "BMW M5 CS",
+            "BMW M4 CSL",
+            "BMW M3 CS",
+            "BMW XM Label",
+            "BMW i8"
+        ]
+    },
+    "lifestyle": {
+        "locations": [
+            "Luxury Penthouse",
+            "Private Mansion",
+            "Rooftop Terrace",
+            "Exclusive Nightclub",
+            "Private Garage",
+            "Luxury Hotel Suite",
+            "Private Yacht",
+            "Private Jet Interior"
+        ],
+        "accessories": [
+            "Luxury Wristwatch",
+            "Black Leather Gloves",
+            "Designer Sunglasses",
+            "Luxury Fountain Pen",
+            "Tailored Black Suit",
+            "Premium Leather Briefcase"
+        ]
+    },
+    "architecture": {
+        "structures": [
+            "Gothic Mansion",
+            "Modern Glass Skyscraper",
+            "Brutalist Architecture",
+            "Luxury Contemporary Villa",
+            "Grand Marble Hall",
+            "Underground Luxury Garage"
+        ]
+    },
+    "environments": {
+        "urban": [
+            "Rainy Downtown Street",
+            "Neon Lit City",
+            "Rooftop City Skyline",
+            "Empty Metropolitan Avenue",
+            "Luxury Shopping District",
+            "Foggy Urban Street"
+        ],
+        "nature": [
+            "Mountain Road at Night",
+            "Coastal Highway",
+            "Dark Forest",
+            "Misty Lake",
+            "Cliffside Landscape"
+        ]
+    },
+    "characters": {
+        "realistic": [
+            "Mysterious Billionaire",
+            "Elegant Businessman",
+            "Luxury Fashion Model",
+            "Cinematic Male Portrait",
+            "Cinematic Female Portrait",
+            "Masked Vigilante Inspired Character"
+        ],
+        "anime": [
+            "Dark Anime Male Character",
+            "Dark Anime Female Character",
+            "Elegant Anime Gentleman",
+            "Mysterious Anime Protagonist",
+            "Anime Antihero",
+            "Luxury Anime Character",
+            "Anime Profile Portrait"
+        ]
+    },
+    "atmosphere": {
+        "weather": [
+            "Heavy Rain",
+            "Light Rain",
+            "Dense Fog",
+            "Night Mist",
+            "Drifting Smoke"
+        ],
+        "effects": [
+            "Wet Surface Reflections",
+            "Volumetric Light",
+            "Neon Reflections",
+            "Floating Dust Particles",
+            "Subtle Film Grain",
+            "Atmospheric Haze"
+        ]
+    },
+    "lighting": {
+        "styles": [
+            "Low Key Lighting",
+            "Neon Lighting",
+            "Rim Lighting",
+            "Cinematic Contrast",
+            "Soft Ambient Lighting",
+            "Chiaroscuro"
+        ]
+    },
+    "visual_effects": {
+        "cinematic": [
+            "Cinematic",
+            "Dramatic Shadows",
+            "Low Key Atmosphere",
+            "Chiaroscuro"
+        ],
+        "concealment": [
+            "Silhouette",
+            "Blurred Face",
+            "Shadow Concealment"
+        ],
+        "film": [
+            "Faded Film",
+            "Film Grain",
+            "Soft Focus",
+            "Motion Blur"
+        ],
+        "atmosphere": [
+            "Red Rim Light",
+            "Atmospheric Haze",
+            "Volumetric Light",
+            "Dreamlike Glow"
+        ]
+    },
+    "scene_locations": {
+        "interiors": [
+            "Modern Luxury Penthouse",
+            "Contemporary Private Mansion",
+            "Luxury Hotel Suite",
+            "Modern Architectural Villa",
+            "Private Underground Garage",
+            "Minimalist Luxury Apartment",
+            "Private Jet Interior",
+            "Modern Yacht Interior"
+        ],
+        "urban": [
+            "Rainy Downtown Street",
+            "Modern City Rooftop",
+            "Underground Parking Structure",
+            "Quiet Metropolitan Avenue",
+            "Luxury Commercial District",
+            "Modern Glass Building Exterior",
+            "City Street at Night",
+            "Urban Residential Street"
+        ],
+        "nature": [
+            "Mountain Highway",
+            "Forest Road",
+            "Lakeside Road",
+            "Coastal Highway",
+            "Alpine Mountain Landscape",
+            "Woodland Clearing",
+            "Rocky Coastal Road",
+            "Mountain Lake Shore"
+        ]
+    },
+    "scene_settings": {
+        "time_of_day": [
+            "Dawn",
+            "Early Morning",
+            "Morning",
+            "Midday",
+            "Afternoon",
+            "Golden Hour",
+            "Sunset",
+            "Dusk",
+            "Night",
+            "Late Night"
+        ],
+        "lighting": [
+            "Natural Daylight",
+            "Overcast Natural Light",
+            "Window Light",
+            "Warm Interior Lighting",
+            "Natural Street Lighting",
+            "Street Lamp Lighting",
+            "Headlight Illumination",
+            "Moonlight",
+            "Ambient City Lighting",
+            "Low-Key Natural Lighting"
+        ],
+        "weather": [
+            "Clear Sky",
+            "Light Rain",
+            "Heavy Rain",
+            "Drizzle",
+            "Fog",
+            "Snow",
+            "Thunderstorm",
+            "Overcast Sky"
+        ],
+        "atmosphere": [
+            "Dense Fog",
+            "Light Mist",
+            "Morning Mist",
+            "Ground Fog",
+            "Atmospheric Haze",
+            "Drifting Smoke",
+            "Volumetric Fog",
+            "Dust Particles",
+            "Rain Haze",
+            "Subtle Atmospheric Depth"
+        ]
+    }
+}

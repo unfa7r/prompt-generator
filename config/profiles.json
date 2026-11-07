@@ -1,0 +1,67 @@
+{
+  "realistic": {
+    "name": "Realistic",
+    "aesthetic": [
+      "Photorealistic",
+      "Luxury Lifestyle",
+      "Dark Cinematic",
+      "Editorial Photography",
+      "Night Photography"
+    ],
+    "lighting": [
+      "Dramatic Lighting",
+      "Neon Lighting",
+      "Low Key Lighting",
+      "Volumetric Lighting",
+      "Natural Ambient Lighting",
+      "Golden Hour"
+    ],
+    "camera": [
+      "Low Angle",
+      "Eye Level",
+      "Wide Angle",
+      "Telephoto",
+      "Close Up",
+      "Portrait Framing"
+    ],
+    "detail": "Ultra Detailed",
+    "texture": [
+      "Realistic Skin Texture",
+      "Natural Reflections",
+      "Detailed Materials",
+      "Physically Accurate Lighting"
+    ]
+  },
+  "anime": {
+    "name": "Anime",
+    "aesthetic": [
+      "Dark Anime",
+      "Luxury Anime",
+      "Cinematic Anime",
+      "Semi Realistic Anime",
+      "Character Illustration"
+    ],
+    "lighting": [
+      "Dramatic Anime Lighting",
+      "Neon Rim Lighting",
+      "Soft Cinematic Lighting",
+      "High Contrast Lighting",
+      "Atmospheric Lighting"
+    ],
+    "camera": [
+      "Portrait Close Up",
+      "Eye Level",
+      "Low Angle",
+      "Three Quarter View",
+      "Side Profile"
+    ],
+    "detail": "Highly Detailed",
+    "texture": [
+      "Detailed Linework",
+      "Expressive Eyes",
+      "Detailed Hair",
+      "Refined Shading",
+      "Rich Color Rendering"
+    ]
+  }
+}
