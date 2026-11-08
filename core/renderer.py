@@ -55,10 +55,10 @@ def format_attributes(attributes, element_type=""):
     }
 
     architecture_labels = {
-        "architectural style": lambda value: f"in the {value} architectural style",
-        "facade": lambda value: f"featuring {value.lower()}",
+        "architectural style": lambda value: f"in the {value.lower()} style",
+        "facade": lambda value: f"with {(value.lower() if value.lower().endswith('cladding') else (('an ' if value[0].lower() in 'aeiou' else 'a ') + value.lower()))}",
         "architectural materials": lambda value: f"constructed from {value.lower()}",
-        "architectural features": lambda value: f"with {value.lower()}"
+        "architectural features": lambda value: f"featuring {(value.lower() if value.lower().endswith(('windows', 'columns', 'detailing')) else (('an ' if value[0].lower() in 'aeiou' else 'a ') + value.lower()))}"
     }
 
     labels = {
@@ -230,154 +230,187 @@ def render_prompt(scene_graph):
         raise TypeError("Scene graph must be a dictionary.")
 
     composition = scene_graph.get("compositional_deconstruction", {})
-    elements = composition.get("elements", [])
+    raw_elements = composition.get("elements", [])
+
+    elements = [
+        describe_json_element({
+            **element,
+            "mode": "anime" if scene_graph.get(
+                "high_level_description", ""
+            ).lower().startswith("anime") else "realistic"
+        }).rstrip(".")
+        for element in raw_elements
+    ]
+
+    return compose_prompt(scene_graph, elements)
+
+
+def compose_prompt(scene_graph, elements):
+    original = scene_graph.get("high_level_description", "")
+    anime = original.lower().startswith("anime")
+
+    composition = scene_graph.get("compositional_deconstruction", {})
     background = composition.get("background") or {}
 
-    original_description = scene_graph.get("high_level_description", "")
-    mode = "anime" if original_description.lower().startswith("anime") else "realistic"
+    parts = []
 
-    main_element = elements[0] if elements else {}
-    main = describe_main_element(main_element, mode) if elements else ""
+    if anime:
+        parts.append("Anime-style illustration")
+    else:
+        first_type = (
+            composition.get("elements", [{}])[0].get("type", "").lower()
+            if composition.get("elements") else ""
+        )
+        if first_type in ("car", "vehicle"):
+            parts.append("Photorealistic automotive photography")
+        elif first_type in ("character", "person", "portrait"):
+            parts.append("Photorealistic portrait photography")
+        elif first_type == "architecture":
+            parts.append("Realistic architectural photography")
+        else:
+            parts.append("Photorealistic scene")
 
-    if not main:
-        main = "A photorealistic scene" if mode == "realistic" else "An anime-style scene"
+    if elements:
+        first = elements[0].strip().rstrip(".")
+        parts.append(first)
 
-    paragraphs = [main.rstrip(" .") + "."]
+        for extra in elements[1:]:
+            extra = extra.strip().rstrip(".")
+            if extra:
+                parts.append(extra)
 
-    camera_angle = scene_graph.get("camera_angle")
-    if camera_angle:
-        angle = describe_camera_angle(camera_angle)
-        paragraphs.append(f"The shot is captured {angle}.")
-
-    additional = describe_additional_elements(elements[1:], mode) if len(elements) > 1 else ""
-    if additional:
-        paragraphs.append(f"The scene also includes {additional.lstrip(', ')}.")
-
-    environment_parts = []
+    angle = scene_graph.get("camera_angle")
+    if angle:
+        angle_text = angle.lower().replace("-", " ").strip()
+        if angle_text not in ("front view", "rear view", "side view"):
+            parts.append(angle_text)
+        else:
+            parts.append(angle_text)
 
     location = background.get("location")
-    time = background.get("time")
-    weather = background.get("weather")
-    lighting = background.get("lighting")
-    atmosphere = background.get("atmosphere")
-
     if location:
-        environment_parts.append(f"at {location.lower()}")
+        parts.append(location.lower())
 
+    time = background.get("time")
     if time:
-        environment_parts.append(f"during {time.lower()}")
-
-    weather_descriptions = {
-        "snow": "snowy conditions",
-        "heavy rain": "heavy rainfall",
-        "light rain": "light rainfall",
-        "drizzle": "light drizzle",
-        "clear sky": "clear skies",
-        "overcast sky": "overcast skies",
-        "fog": "foggy conditions",
-        "thunderstorm": "a thunderstorm"
-    }
-
-    if weather:
-        environment_parts.append(
-            f"under {weather_descriptions.get(weather.lower(), weather.lower())}"
-        )
-
-    if environment_parts:
-        paragraphs.append("The scene takes place " + ", ".join(environment_parts) + ".")
-
-    if lighting or atmosphere:
-        if lighting:
-            paragraphs.append(f"The scene is illuminated by {lighting.lower()}.")
-
-        if atmosphere:
-            paragraphs.append(f"The atmosphere features {atmosphere.lower()}.")
-
-    effects = [
-        "cinematic effects" if item.lower() == "cinematic" else item.lower()
-        for item in scene_graph.get("visual_effects", [])
-    ]
-    if effects:
-        if len(effects) == 1:
-            effect_text = effects[0]
-        else:
-            effect_text = ", ".join(effects[:-1]) + " and " + effects[-1]
-
-        paragraphs.append(f"The image is enhanced with {effect_text}.")
-
-    visual_style = scene_graph.get("visual_style")
-    if visual_style:
-        style_names = {
-            "surrealism": "surrealist",
-            "impressionism": "impressionist",
-            "expressionism": "expressionist",
-            "minimalism": "minimalist",
-            "realism": "realist"
+        time_map = {
+            "night": "at night",
+            "day": "during the day",
+            "sunset": "at sunset",
+            "sunrise": "at sunrise"
         }
+        parts.append(time_map.get(time.lower(), time.lower()))
 
-        if main_element.get("type", "").lower() == "architecture":
-            paragraphs.append(
-                f"The architecture follows a {visual_style} architectural style."
-            )
-        else:
-            style = style_names.get(visual_style.lower(), visual_style.lower())
-            paragraphs.append(f"The image features a {style} visual style.")
+    weather = background.get("weather")
+    if weather:
+        weather_map = {
+            "overcast sky": "overcast sky",
+            "clear sky": "clear sky",
+            "heavy rain": "heavy rainfall",
+            "light rain": "light rain",
+            "drizzle": "light drizzle",
+            "snow": "snow",
+            "fog": "fog",
+            "thunderstorm": "thunderstorm"
+        }
+        parts.append(weather_map.get(weather.lower(), weather.lower()))
 
-    color_grading = scene_graph.get("color_grading")
-    if color_grading:
-        grading_names = {
-            "analog film colors": "an analog film color palette",
-            "pastel color palette": "a pastel color palette",
+    lighting = background.get("lighting")
+    if lighting:
+        parts.append(lighting.lower())
+
+    atmosphere = background.get("atmosphere")
+    if atmosphere:
+        parts.append(atmosphere.lower())
+
+    effects = scene_graph.get("visual_effects") or []
+    parts.extend(effect.lower() for effect in effects)
+
+    style = scene_graph.get("visual_style")
+    if style:
+        style_map = {
+            "minimalism": "minimalist aesthetic",
+            "surrealism": "surrealist aesthetic",
+            "impressionism": "impressionist aesthetic",
+            "expressionism": "expressionist aesthetic",
+            "realism": "realist aesthetic"
+        }
+        parts.append(style_map.get(style.lower(), style.lower() + " aesthetic"))
+
+    grading = scene_graph.get("color_grading")
+    if grading:
+        grading_map = {
+            "high contrast monochrome": "high-contrast monochrome",
+            "analog film colors": "analog film color palette",
+            "pastel color palette": "pastel color palette",
             "deep emerald tones": "deep emerald tones",
             "golden cinematic tones": "golden cinematic tones",
             "muted earth tones": "muted earth tones",
-            "teal and orange": "teal and orange tones"
+            "teal and orange": "teal and orange color grading"
         }
-        grading = grading_names.get(color_grading.lower(), color_grading.lower())
-        paragraphs.append(f"The image uses {grading}.")
+        parts.append(grading_map.get(grading.lower(), grading.lower()))
 
     techniques = scene_graph.get("camera_techniques") or []
+    for technique in techniques:
+        normalized = technique.lower().replace("-", " ").strip()
+        if angle and normalized == angle.lower().replace("-", " ").strip():
+            continue
 
-    technique_descriptions = {
-        "anamorphic cinematography": "Anamorphic framing creates a cinematic widescreen look with distinctive lens characteristics",
-        "dutch angle": "A tilted camera angle adds visual tension and a sense of unease",
-        "over-the-shoulder shot": "An over-the-shoulder composition adds depth and establishes spatial relationships",
-        "tracking shot": "Tracking camera movement creates a sense of motion and follows the subject",
-        "dolly zoom": "A dolly zoom creates a dramatic perspective shift while maintaining the subject's visual prominence",
-        "macro photography": "Macro photography reveals intricate textures and fine details",
-        "long exposure": "Long exposure captures motion as flowing light trails and dynamic movement",
-        "low perspective shot": "A low perspective emphasizes the subject's scale and presence",
-        "extreme close-up": "Extreme close-up framing highlights minute details and textures",
-        "symmetrical framing": "Symmetrical framing creates visual balance and geometric harmony",
-        "leading lines": "Leading lines guide the viewer's attention toward the main subject",
-        "foreground framing": "Foreground elements add depth and naturally frame the main subject"
+        technique_map = {
+            "low perspective shot": "low-angle perspective",
+            "extreme close up": "extreme close-up",
+            "macro photography": "macro photography",
+            "long exposure": "long exposure",
+            "symmetrical framing": "symmetrical framing",
+            "leading lines": "leading lines",
+            "foreground framing": "foreground framing",
+            "dutch angle": "Dutch angle",
+            "anamorphic cinematography": "anamorphic cinematography",
+            "tracking shot": "tracking shot",
+            "dolly zoom": "dolly zoom",
+            "over the shoulder shot": "over-the-shoulder composition"
+        }
+        parts.append(technique_map.get(normalized, technique.lower()))
+
+    camera = scene_graph.get("camera") or {}
+
+    lens = camera.get("lens")
+    if lens:
+        parts.append(f"{lens} lens")
+
+    distance = camera.get("shot_distance")
+    distance_map = {
+        "Close": "close-up framing",
+        "Medium": "medium shot",
+        "Wide": "wide shot"
     }
+    if distance:
+        parts.append(distance_map.get(distance, distance.lower()))
 
-    if techniques:
-        for technique in techniques:
-            description = technique_descriptions.get(
-                technique.lower(),
-                f"The composition incorporates {technique.lower()}"
-            )
-            paragraphs.append(description.rstrip(".") + ".")
+    depth = camera.get("depth_of_field")
+    depth_map = {
+        "Shallow": "shallow depth of field",
+        "Moderate": "moderate depth of field",
+        "Deep": "deep depth of field"
+    }
+    if depth:
+        parts.append(depth_map.get(depth, depth.lower()))
 
-    main_name, _ = split_description(main_element)
-
-    camera_description = describe_camera(
-        scene_graph.get("camera"),
-        mode,
-        main_element.get("type"),
-        main_name
-    )
-
-    if camera_description:
-        paragraphs.append(camera_description)
+    focus = camera.get("focus")
+    focus_map = {
+        "Subject Focus": "sharp focus on the main subject",
+        "Environmental Focus": "environmental focus",
+        "Balanced Focus": "balanced subject and environmental focus"
+    }
+    if focus:
+        parts.append(focus_map.get(focus, focus.lower()))
 
     aspect_ratio = scene_graph.get("aspect_ratio")
     if aspect_ratio:
-        paragraphs.append(f"The composition uses a {aspect_ratio} aspect ratio.")
+        parts.append(f"{aspect_ratio} aspect ratio")
 
-    return " ".join(" ".join(paragraphs).split())
+    return ", ".join(part.strip(" ,.") for part in parts if part).strip() + "."
+
 
 def describe_json_background(background):
     if not isinstance(background, dict):
@@ -385,54 +418,12 @@ def describe_json_background(background):
 
     parts = []
 
-    location = background.get("location")
-    time = background.get("time")
-    weather = background.get("weather")
-    lighting = background.get("lighting")
-    atmosphere = background.get("atmosphere")
+    for key in ("location", "time", "weather", "lighting", "atmosphere"):
+        value = background.get(key)
+        if value:
+            parts.append(value.lower())
 
-    if location:
-        place = location.lower()
-        countable_places = (
-            "city", "town", "village", "kingdom", "district",
-            "forest", "street", "desert", "mansion", "castle",
-            "garden", "island", "building", "village"
-        )
-
-        last_word = place.split()[-1]
-        if last_word in countable_places:
-            article = "an" if place[0] in "aeiou" else "a"
-            place = f"{article} {place}"
-
-        parts.append(f"The scene takes place in {place}.")
-
-    conditions = []
-
-    if time:
-        if time.lower() == "night":
-            conditions.append("at night")
-        elif time.lower() == "day":
-            conditions.append("during the day")
-        elif time.lower() == "sunset":
-            conditions.append("at sunset")
-        elif time.lower() == "sunrise":
-            conditions.append("at sunrise")
-        else:
-            conditions.append(f"during the {time.lower()}")
-
-    if weather:
-        conditions.append(f"with {weather.lower()}")
-
-    if lighting:
-        conditions.append(f"illuminated by {lighting.lower()}")
-
-    if atmosphere:
-        conditions.append(f"surrounded by {atmosphere.lower()}")
-
-    if conditions:
-        parts.append("The environment is " + ", ".join(conditions) + ".")
-
-    return " ".join(parts)
+    return ", ".join(parts)
 
 
 def describe_json_element(element):
@@ -459,7 +450,7 @@ def describe_json_element(element):
 
     def describe_wearing(value):
         value = value.strip()
-        if value.lower().endswith(("s", "glasses")):
+        if value.lower().endswith(("s", "glasses", "jewelry")):
             return f"wearing {value.lower()}"
         return f"wearing {add_article(value).lower()}"
 
@@ -487,7 +478,11 @@ def describe_json_element(element):
             sentence += f" with a {finish.lower()} finish"
 
         if material:
-            sentence += f" and {material.lower()} details"
+            material_text = material.lower()
+            if material_text.endswith(" details"):
+                sentence += f" with {material_text}"
+            else:
+                sentence += f" and {material_text} details"
 
         if headlights:
             sentence += f", featuring {headlights.lower().replace('led', 'LED')}"
@@ -511,7 +506,7 @@ def describe_json_element(element):
             else:
                 sentence = f"An original anime character named {name}"
         else:
-            sentence = f"A photorealistic portrait of {name}"
+            sentence = name
 
         details = []
 
@@ -533,11 +528,11 @@ def describe_json_element(element):
 
         character_details = {
             "hairstyle": lambda value: f"with {value.lower()}",
-            "clothing": lambda value: f"dressed in {add_article(value).lower()}",
+            "clothing": lambda value: f"dressed in {value.lower() if value.lower().endswith(('clothing', 'wear', 'streetwear', 'techwear')) else add_article(value).lower()}",
             "expression": lambda value: (
-                f"with {value.lower()} expression"
+                f"with {value.lower()}"
                 if value.lower().endswith("expression")
-                else f"with a {value.lower()} expression"
+                else f"with {add_article(value).lower()} expression"
             ),
             "accessories": describe_wearing
         }
@@ -561,16 +556,16 @@ def describe_json_element(element):
         features = attributes.get("architectural features")
 
         if style:
-            details.append(f"in a {style.lower()} architectural style")
+            details.append(f"in the {style.lower()} style")
 
         if facade:
-            details.append(f"with {add_article(facade).lower()}")
+            details.append(f"with {facade.lower() if facade.lower().endswith('cladding') else add_article(facade).lower()}")
 
         if materials:
             details.append(f"constructed from {materials.lower()}")
 
         if features:
-            details.append(f"featuring {features.lower()}")
+            details.append(f"featuring {features.lower() if features.lower().endswith(('windows', 'columns', 'detailing')) else add_article(features).lower()}")
 
         if details:
             return "An architectural design " + ", ".join(details) + "."
@@ -579,175 +574,12 @@ def describe_json_element(element):
 
 
 def create_json_description(scene_graph, elements):
-    original = scene_graph.get("high_level_description", "")
-    is_anime = original.lower().startswith("anime")
-
-    original_elements = scene_graph.get(
-        "compositional_deconstruction", {}
-    ).get("elements", [])
-
-    first_type = (
-        original_elements[0].get("type", "").lower()
-        if original_elements else ""
-    )
-
-    if elements:
-        first = elements[0]["desc"].strip().rstrip(".")
-
-        if is_anime:
-            if first.lower().startswith("an original anime character"):
-                description = first + "."
-            else:
-                core = first
-                if core.lower().startswith("an "):
-                    core = core[3:]
-                elif core.lower().startswith("a "):
-                    core = core[2:]
-                description = "An anime-style scene featuring " + core + "."
-
-        elif first.lower().startswith(("a photorealistic", "an architectural")):
-            description = first + "."
-
-        elif first_type == "architecture":
-            description = "A realistic architectural photograph of " + first + "."
-
-        elif first_type in ("vehicle", "car"):
-            description = "A photorealistic automotive photograph featuring " + first + "."
-
-        else:
-            description = "A photorealistic scene featuring " + first + "."
-
-        for element in elements[1:]:
-            extra = element["desc"].strip().rstrip(".")
-            if extra:
-                if extra.lower().startswith(("a ", "an ", "the ")):
-                    phrase = extra[0].lower() + extra[1:]
-                elif element.get("type", "").lower() == "architecture":
-                    phrase = "a " + extra.lower()
-                else:
-                    phrase = "a " + extra[0].lower() + extra[1:]
-                description += " The scene also includes " + phrase + "."
-
-    else:
-        description = (
-            "An anime-style scene."
-            if is_anime
-            else "A photorealistic scene."
-        )
-
-    camera_angle = scene_graph.get("camera_angle")
-    if camera_angle:
-        normalized_angle = camera_angle.lower().replace("-", " ").strip()
-        if normalized_angle in ("extreme close up", "close up"):
-            article = "an" if normalized_angle.startswith("extreme") else "a"
-            display_angle = normalized_angle.replace(" ", "-")
-            description += f" The shot uses {article} {display_angle} framing."
-        else:
-            angle = describe_camera_angle(camera_angle)
-            description += f" The shot is captured {angle}."
-
-    background = scene_graph.get(
-        "compositional_deconstruction", {}
-    ).get("background") or {}
-
-    background_description = describe_json_background(background)
-    if background_description:
-        description += " " + background_description
-
-    effects = scene_graph.get("visual_effects") or []
-    if effects:
-        effect_names = {
-            "cinematic": "cinematic effects",
-            "motion blur": "motion blur to emphasize movement",
-            "lens flare": "lens flare for enhanced light interaction",
-            "depth of field": "depth-of-field effects to separate the subject from its surroundings",
-            "film grain": "subtle film grain for a textured photographic appearance"
-        }
-
-        effect_descriptions = [
-            effect_names.get(effect.lower(), effect.lower())
-            for effect in effects
-        ]
-        description += " The image incorporates " + ", ".join(effect_descriptions) + "."
-
-    visual_style = scene_graph.get("visual_style")
-    if visual_style:
-        style_names = {
-            "surrealism": "surrealist",
-            "impressionism": "impressionist",
-            "expressionism": "expressionist",
-            "minimalism": "minimalist",
-            "realism": "realist",
-            "gothic": "gothic",
-            "anime": "anime"
-        }
-
-        architecture = first_type == "architecture"
-
-        style = style_names.get(visual_style.lower(), visual_style.lower())
-
-        if architecture:
-            existing_descriptions = " ".join(
-                element.get("desc", "").lower() for element in elements
-            )
-            if f"{style} architectural style" not in existing_descriptions:
-                description += f" The architecture follows a {style} architectural style."
-        else:
-            article = "an" if style[0].lower() in "aeiou" else "a"
-            description += f" The image features {article} {style} visual style."
-
-    color_grading = scene_graph.get("color_grading")
-    if color_grading:
-        grading_names = {
-            "analog film colors": "an analog film color palette",
-            "pastel color palette": "a pastel color palette",
-            "deep emerald tones": "deep emerald tones",
-            "golden cinematic tones": "golden cinematic tones",
-            "muted earth tones": "muted earth tones",
-            "teal and orange": "teal and orange tones"
-        }
-
-        grading = grading_names.get(
-            color_grading.lower(), color_grading.lower()
-        )
-        description += f" The image uses {grading}."
-
-    technique_descriptions = {
-        "anamorphic cinematography": "Anamorphic framing creates a cinematic widescreen look with distinctive lens characteristics.",
-        "dutch angle": "A tilted camera angle adds visual tension and a sense of unease.",
-        "over-the-shoulder shot": "An over-the-shoulder composition adds depth and establishes spatial relationships.",
-        "tracking shot": "Tracking camera movement creates a sense of motion and follows the subject.",
-        "dolly zoom": "A dolly zoom creates a dramatic perspective shift while maintaining the subject's visual prominence.",
-        "macro photography": "Macro photography reveals intricate textures and fine details.",
-        "long exposure": "Long exposure captures motion as flowing light trails and dynamic movement.",
-        "low perspective shot": "A low perspective emphasizes the subject's scale and presence.",
-        "extreme close-up": "Extreme close-up framing highlights minute details and textures.",
-        "symmetrical framing": "Symmetrical framing creates visual balance and geometric harmony.",
-        "leading lines": "Leading lines guide the viewer's attention toward the main subject.",
-        "foreground framing": "Foreground elements add depth and naturally frame the main subject."
-    }
-
-    techniques = scene_graph.get("camera_techniques") or []
-    angle_normalized = (camera_angle or "").lower().replace("-", " ").strip()
-
-    for technique in techniques:
-        normalized = technique.lower().replace("-", " ").strip()
-
-        if normalized == angle_normalized:
-            continue
-
-        explanation = technique_descriptions.get(
-            technique.lower(),
-            f"The composition incorporates {technique.lower()}."
-        )
-        description += " " + explanation
-
-    description += (
-        f" The composition uses a "
-        f"{scene_graph.get('aspect_ratio', '4:3')} aspect ratio."
-    )
-
-    return description
+    descriptions = [
+        element.get("desc", "").strip().rstrip(".")
+        for element in elements
+        if element.get("desc", "").strip()
+    ]
+    return compose_prompt(scene_graph, descriptions)
 
 
 def render_json(scene_graph, indent=None):
